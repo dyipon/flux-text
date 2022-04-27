@@ -1,3 +1,4 @@
+---
 apiVersion: notification.toolkit.fluxcd.io/v1beta1
 kind: Provider
 metadata:
@@ -9,7 +10,7 @@ spec:
   secretRef:
     name: slack-url
 
--
+---
 apiVersion: notification.toolkit.fluxcd.io/v1beta1
 kind: Alert
 metadata:
@@ -26,4 +27,3 @@ spec:
       name: '*'
     - kind: HelmRelease
       name: '*'
-
