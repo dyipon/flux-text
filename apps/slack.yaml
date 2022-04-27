@@ -27,3 +27,4 @@ spec:
       name: '*'
     - kind: HelmRelease
       name: '*'
+typofuckekr
