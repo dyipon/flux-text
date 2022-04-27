@@ -16,8 +16,8 @@ spec:
   releaseName: podinfo
   values:
     image:
-      tag: 6.1.4
-    replicaCount: 2
+      tag: 6.1.3
+    replicaCount: 3
     resources:
       limits:
         memory: 256Mi
