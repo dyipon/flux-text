@@ -27,6 +27,8 @@ spec:
       name: '*'
     - kind: HelmRelease
       name: '*'
+    - kind: HelmChart
+      name: '*'
 
 ---
 apiVersion: notification.toolkit.fluxcd.io/v1beta1
