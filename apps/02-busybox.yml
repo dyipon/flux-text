@@ -1,0 +1,36 @@
+# ez csak debuggolásra való pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busybox
+  namespace: ipon
+  labels:
+    app: alpine
+spec:
+  selector:
+    matchLabels:
+      app: alpine
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: alpine
+    spec:
+      containers:
+        - name: alpine
+          image: alpine:3
+          command:
+            - sleep
+            - "infinity"
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c",
+                          "apk add --no-cache curl busybox-extras
+                          redis mysql-client socat bind-tools mc jq micro"]
+      restartPolicy: Always
+      nodeSelector:
+        # dc: aws
+        node-role.kubernetes.io/worker: worker
+
