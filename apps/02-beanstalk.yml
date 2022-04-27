@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &app beanstalk
+  labels:
+    app: *app
+  namespace: ipon
+spec:
+  selector:
+    matchLabels:
+      app: *app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *app
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: *app
+        image: schickling/beanstalkd
+        args: ["-z", "524288"] #nagyobb buffer
+        ports:
+          - containerPort: 11300
+            name: *app
+            protocol: TCP
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+      nodeSelector:
+        dc: atw 
+        node-role.kubernetes.io/worker: worker
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - *app
+            topologyKey: kubernetes.io/hostname
+
+
+#ezt majd akkor kell kivezetni ha nem pattog a csomag a node-ok között (talán 1.21)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: &app beanstalk
+  namespace: ipon
+  labels:
+    app: *app
+spec:
+  ports:
+  - port: 11300
+    name: *app
+  clusterIP: None # This is needed for statefulset hostnames like elasticsearch-0 to resolve
+  selector:
+    app: *app
+
+# ez kell hogy kintről elérje a régi gép
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+  # name: &app beanstalk-lb
+  # namespace: ipon
+  # labels:
+    # app: *app
+# spec:
+  # ports:
+  # - port: 11300
+    # name: beanstalk
+  # type: LoadBalancer
+  # selector:
+    # app: beanstalk
+
